@@ -1,0 +1,28 @@
+{{define "footer"}}
+<footer class="site-footer"
+    style="border-top: 1px solid var(--color-border); padding-top: 2rem; margin-top: 4rem; padding-bottom: 2rem;">
+    <div class="container"
+        style="display: flex; flex-direction: column; text-align: center; align-items: center; justify-content: center; gap: 0.4rem;">
+
+        <p style="margin: 0; color: var(--color-text-dim); font-size: 0.9rem;">
+            {{.DeepDataMerge.LayoutConfig.Copyright}}
+        </p>
+
+        <p id="git-commit-display"
+            style="margin: 0; color: var(--color-text-dim); font-family: monospace; font-size: 0.85rem;"></p>
+
+        <p style="margin: 0; color: var(--color-text-dim); font-size: 0.85rem;">
+            rendered by <a href="https://github.com/anna-ssg/anna" target="_blank"
+                style="color: var(--color-text-dim); text-decoration: underline; text-underline-offset: 4px;">anna</a>
+        </p>
+
+    </div>
+</footer>
+
+<script src="/static/commit.js"></script>
+<script>
+    if (typeof GIT_COMMIT !== 'undefined') {
+        document.getElementById('git-commit-display').innerText = GIT_COMMIT;
+    }
+</script>
+{{end}}

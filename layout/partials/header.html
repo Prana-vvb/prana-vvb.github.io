@@ -1,0 +1,14 @@
+{{define "header"}}
+<header class="site-header">
+    <div class="container" style="display: flex; justify-content: center; padding: 1rem 0;">
+        <nav class="site-nav" style="display: flex; gap: 1.5rem;">
+            {{range .DeepDataMerge.LayoutConfig.Navbar}}
+            {{range $label, $link := .}}
+            <a href="/{{$link}}" class="navitem"
+                style="text-decoration: none; font-weight: bold; color: var(--color-primary);">{{$label}}</a>
+            {{end}}
+            {{end}}
+        </nav>
+    </div>
+</header>
+{{end}}

@@ -1,0 +1,53 @@
+{{ define "page"}}
+{{$PageData := index .DeepDataMerge.Templates .PageURL}}
+{{ template "head" .}}
+
+<body class="site-body">
+
+    {{template "header" .}}
+    <main class="container site-main" role="main">
+        <article class="content">
+            <section class="body">
+
+                {{ if ne (len $PageData.Frontmatter.Title) 0 }}
+                <div class="post-description">
+                    <h1>{{ $PageData.Frontmatter.Title }}</h1>
+                    <div class="page-date">
+                        {{ if ne (len $PageData.Frontmatter.Date) 0 }}
+                        Published on {{$PageData.Frontmatter.Date}}
+                        {{end}}
+                    </div>
+                    <div class="authors-placeholder">
+                        {{ if ne (len $PageData.Frontmatter.Authors) 0 }}
+                        <p>Authors: {{range $i, $a := $PageData.Frontmatter.Authors}}{{if $i}}, {{end}}{{ $a }}{{end}}
+                        </p>
+                        {{ end }}
+                    </div>
+                    <div class="tags-placeholder">
+                        {{ if ne (len $PageData.Frontmatter.Tags) 0 }}
+                        {{range $PageData.Frontmatter.Tags}}
+                        <a class="tag" href="/tags/{{.}}.html">{{.}}</a>
+                        {{end}}
+                        {{ end }}
+                    </div>
+                </div>
+                {{ end }}
+
+                {{$PageData.Body}}
+            </section>
+        </article>
+
+        {{ if ne (len $PageData.Frontmatter.Tags) 0 }}
+        <section class="graph-bottom" aria-label="Graph view">
+            <h3 class="graph-bottom-title">Graph View</h3>
+            <div id="mini-graph" class="graph-container mini"></div>
+        </section>
+        {{ end }}
+    </main>
+
+    {{template "footer" .}}
+</body>
+
+</html>
+
+{{ end}}

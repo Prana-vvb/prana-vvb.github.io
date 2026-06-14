@@ -1,0 +1,47 @@
+{{define "homepage"}}
+{{template "head" .}}
+
+<body>
+    {{template "header" .}}
+
+    <main class="homepage-grid">
+        <aside class="left-col">
+            <h3>Recently Played</h3>
+            <div id="lastfm-status" style="margin-bottom: 1rem; color: var(--color-text-dim); font-size: 0.9rem;">
+                Loading...</div>
+            <iframe id="spotify-embed" style="border-radius:12px;" width="100%" height="152" frameborder="0"
+                allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"></iframe>
+        </aside>
+
+        <section class="center-col">
+            <h1>Pranav V Bhat</h1>
+            <p>I am a student and aspiring software engineer focused on backend infrastructure, distributed systems, and
+                systems programming in Rust.</p>
+
+            <div class="social-links" style="margin-top: 1.5rem;">
+                {{range $key, $value := .DeepDataMerge.LayoutConfig.Socials}}
+                <a href="{{$value}}" target="_blank"
+                    style="margin: 0 0.5rem; text-decoration: underline; text-underline-offset: 4px;">{{$key}}</a>
+                {{end}}
+            </div>
+
+            <figure class="bottom-image" style="margin-top: 2rem;">
+                <img src="static/images/tmp.jpg">
+            </figure>
+        </section>
+
+        <aside class="right-col">
+            <h3>Recent Updates</h3>
+            <div id="recent-posts-container">
+            </div>
+        </aside>
+    </main>
+
+    {{template "footer" .}}
+
+    <script src="/static/scripts/homepage.js"></script>
+</body>
+
+</html>
+{{end}}

@@ -1,0 +1,22 @@
+{
+  "baseURL": "TODO",
+  "siteTitle": "Pranav V Bhat",
+  "author": "Pranav V Bhat",
+  "copyright": "© Pranav V Bhat 2026",
+  "themeURL": "/static/styles/main.css",
+  "navbar": [
+    {
+      "Blog": "collections/blog.html"
+    },
+    {
+      "Field Notes": "collections/notes.html"
+    },
+    {
+      "Clicks": "collections/clicks.html"
+    }
+  ],
+  "socials": {
+    "github": "https://github.com/Prana-vvb",
+    "linkedin": "https://linkedin.com/in/pranav-v-bhat"
+  }
+}

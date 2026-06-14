@@ -1,0 +1,28 @@
+{{ define "all-posts"}}
+{{$PageData := index .DeepDataMerge.Collections .PageURL}}
+{{ template "head" .}}
+
+<body class="site-body">
+    {{template "header" .}}
+    <main class="container site-main" role="main">
+        <article class="content">
+            <section class="posts">
+                {{range $Post := index .DeepDataMerge.CollectionsMap .PageURL}}
+                <a class="post-card" href="/{{$Post.CompleteURL}}">
+                    <div class="post-card-div">
+                        <h3>{{$Post.Frontmatter.Title}}</h3>
+                        <p>{{$Post.Frontmatter.Description}}</p>
+                        <p>{{$Post.Frontmatter.Date}}</p>
+                    </div>
+                </a>
+                {{end}}
+            </section>
+        </article>
+    </main>
+
+    {{template "footer" .}}
+</body>
+
+</html>
+
+{{ end}}

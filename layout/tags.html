@@ -1,0 +1,29 @@
+{{ define "all-tags"}}
+{{$PageData := .TemplateData}}
+{{ template "head" .}}
+
+<body class="site-body">
+    {{template "header" .}}
+    <main class="container site-main" role="main">
+        <article class="content">
+            <section class="posts">
+                <div class="all-tags">
+                    {{range .TagNames}}
+                    <a href="/tags/{{.}}.html">{{.}}</a>
+                    {{end}}
+                </div>
+            </section>
+        </article>
+    </main>
+
+    <div id="chart" class="graph-container" aria-label="Tags graph" role="img"></div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script defer src="/static/scripts/graph.js"></script>
+
+    {{template "footer" .}}
+
+</body>
+
+</html>
+
+{{ end}}
