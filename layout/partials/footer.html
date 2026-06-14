@@ -12,7 +12,7 @@
             style="margin: 0; color: var(--color-text-dim); font-family: monospace; font-size: 0.85rem;"></p>
 
         <p style="margin: 0; color: var(--color-text-dim); font-size: 0.85rem;">
-            rendered by <a href="https://github.com/anna-ssg/anna" target="_blank"
+            Rendered by <a href="https://github.com/anna-ssg/anna" target="_blank"
                 style="color: var(--color-text-dim); text-decoration: underline; text-underline-offset: 4px;">anna</a>
         </p>
 
@@ -22,7 +22,15 @@
 <script src="/static/commit.js"></script>
 <script>
     if (typeof GIT_COMMIT !== 'undefined') {
-        document.getElementById('git-commit-display').innerText = GIT_COMMIT;
+        const commitParts = GIT_COMMIT.split(' ');
+        const hash = commitParts[0];
+        const remainder = commitParts.slice(1).join(' ');
+
+        const githubRepoUrl = "https://github.com/prana-vvb/site";
+
+        const commitLink = `<a href="${githubRepoUrl}/tree/${hash}" target="_blank" style="color: var(--color-text-dim); text-decoration: underline; text-underline-offset: 4px;">${hash}</a>`;
+
+        document.getElementById('git-commit-display').innerHTML = `${commitLink} ${remainder}`;
     }
 </script>
 {{end}}
