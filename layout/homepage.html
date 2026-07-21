@@ -4,9 +4,8 @@
 <body>
     {{template "header" .}}
 
-    <main class="homepage-grid">
+    <main class="homepage-grid site-main">
         <aside class="left-col">
-            <h3>Recently Played</h3>
             <div id="lastfm-status" style="margin-bottom: 1rem; color: var(--color-text-dim); font-size: 0.9rem;">
                 Loading...</div>
             <iframe id="spotify-embed" style="border-radius:12px;" width="100%" height="152" frameborder="0"
@@ -31,15 +30,53 @@
             </figure>
         </section>
 
+        <!-- Right Column: Server-Side Rendered Recent Updates -->
         <aside class="right-col">
             <h3>Recent Updates</h3>
-            <div id="recent-posts-container">
+            <div id="recent-posts-container" style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Range over CollectionsMap to bypass the template.URL string indexing strictness -->
+                {{ range $colURL, $posts := .DeepDataMerge.CollectionsMap }}
+                {{ if eq (printf "%s" $colURL) "collections/blog.html" }}
+                {{ range $index, $post := $posts }}
+                {{ if lt $index 3 }}
+
+                {{ $isPhoto := false }}
+                {{ range $post.Frontmatter.Tags }}
+                {{ if eq . "photos" }}{{ $isPhoto = true }}{{ end }}
+                {{ end }}
+
+                {{ if $isPhoto }}
+                <a href="/{{ $post.CompleteURL }}" class="post-card photo-card">
+                    <img src="{{ if $post.Frontmatter.PreviewImage }}{{ $post.Frontmatter.PreviewImage }}{{ else }}/static/images/default-photo.png{{ end }}"
+                        alt="{{ $post.Frontmatter.Title }}" />
+                    <div class="photo-caption">{{ if $post.Frontmatter.Description }}{{ $post.Frontmatter.Description
+                        }}{{ else }}{{ $post.Frontmatter.Title }}{{ end }}</div>
+                </a>
+                {{ else }}
+                <a href="/{{ $post.CompleteURL }}" class="post-card text-card" style="text-decoration: none;">
+                    <h4>{{ $post.Frontmatter.Title }}</h4>
+
+                    {{ if $post.Frontmatter.Tags }}
+                    <div class="tags-row">
+                        {{ range $post.Frontmatter.Tags }}
+                        <span class="tag">{{ . }}</span>
+                        {{ end }}
+                    </div>
+                    {{ end }}
+
+                    <p class="post-snippet">{{ $post.Frontmatter.Description }}</p>
+                </a>
+                {{ end }}
+
+                {{ end }}
+                {{ end }}
+                {{ end }}
+                {{ end }}
             </div>
         </aside>
     </main>
 
     {{template "footer" .}}
-
     <script src="/static/scripts/homepage.js"></script>
 </body>
 

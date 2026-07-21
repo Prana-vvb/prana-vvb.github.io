@@ -4,8 +4,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         const indexData = await response.json();
 
         const posts = Object.values(indexData)
-            .filter(post => post.url.includes('collections/'))
-            .sort((a, b) => b.date - a.date)
+            .filter(post =>
+                post.url.includes('posts/') ||
+                post.url.includes('photos/') ||
+                post.url.includes('notes/')
+            )
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
             .slice(0, 3);
 
         const container = document.getElementById('recent-posts-container');

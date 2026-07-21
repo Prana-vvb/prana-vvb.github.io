@@ -18,5 +18,8 @@
   "socials": {
     "github": "https://github.com/Prana-vvb",
     "linkedin": "https://linkedin.com/in/pranav-v-bhat"
+  },
+  "collectionLayouts": {
+    "collections/blog.html": "blog"
   }
 }

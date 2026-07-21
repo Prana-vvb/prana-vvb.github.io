@@ -2,52 +2,67 @@
 {{$PageData := index .DeepDataMerge.Templates .PageURL}}
 {{ template "head" .}}
 
-<body class="site-body">
-
+<body class="site-body" style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
     {{template "header" .}}
-    <main class="container site-main" role="main">
-        <article class="content">
-            <section class="body">
 
+    <main class="centered-page-grid site-main" style="flex: 1 0 auto;">
+        <aside></aside>
+
+        <section class="center-col" style="text-align: left;">
+            <article class="content">
                 {{ if ne (len $PageData.Frontmatter.Title) 0 }}
-                <div class="post-description">
-                    <h1>{{ $PageData.Frontmatter.Title }}</h1>
-                    <div class="page-date">
+                <header class="post-header" style="margin-bottom: 2rem;">
+                    <h1
+                        style="font-size: 2.2rem; font-weight: 600; line-height: 1.25; margin: 0 0 0.75rem 0; text-align: left;">
+                        {{ $PageData.Frontmatter.Title }}
+                    </h1>
+
+                    <div class="page-date"
+                        style="color: var(--color-text-dim); font-size: 0.85rem; font-family: monospace; margin-bottom: 0.5rem;">
                         {{ if ne (len $PageData.Frontmatter.Date) 0 }}
                         Published on {{$PageData.Frontmatter.Date}}
                         {{end}}
                     </div>
-                    <div class="authors-placeholder">
-                        {{ if ne (len $PageData.Frontmatter.Authors) 0 }}
-                        <p>Authors: {{range $i, $a := $PageData.Frontmatter.Authors}}{{if $i}}, {{end}}{{ $a }}{{end}}
-                        </p>
-                        {{ end }}
+
+                    {{ if ne (len $PageData.Frontmatter.Authors) 0 }}
+                    <div class="authors-placeholder"
+                        style="color: var(--color-text-dim); font-size: 0.85rem; font-family: monospace; margin-bottom: 0.75rem;">
+                        Authors: {{range $i, $a := $PageData.Frontmatter.Authors}}{{if $i}}, {{end}}{{ $a }}{{end}}
                     </div>
-                    <div class="tags-placeholder">
-                        {{ if ne (len $PageData.Frontmatter.Tags) 0 }}
+                    {{ end }}
+
+                    {{ if ne (len $PageData.Frontmatter.Tags) 0 }}
+                    <div class="tags-placeholder"
+                        style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem;">
                         {{range $PageData.Frontmatter.Tags}}
-                        <a class="tag" href="/tags/{{.}}.html">{{.}}</a>
+                        <a class="tag" href="/tags/{{.}}.html"
+                            style="font-size: 0.75rem; font-family: monospace; background: rgba(110, 118, 129, 0.15); color: var(--color-text-dim); padding: 0.15rem 0.45rem; border-radius: 4px; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.05);">{{.}}</a>
                         {{end}}
-                        {{ end }}
                     </div>
-                </div>
+                    {{ end }}
+                </header>
+                <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 2rem;" />
                 {{ end }}
 
-                {{$PageData.Body}}
-            </section>
-        </article>
+                <div class="markdown-body" style="line-height: 1.7; font-size: 1rem; color: var(--color-text);">
+                    {{$PageData.Body}}
+                </div>
+            </article>
 
-        {{ if ne (len $PageData.Frontmatter.Tags) 0 }}
-        <section class="graph-bottom" aria-label="Graph view">
-            <h3 class="graph-bottom-title">Graph View</h3>
-            <div id="mini-graph" class="graph-container mini"></div>
+            {{ if ne (len $PageData.Frontmatter.Tags) 0 }}
+            <section class="graph-bottom" aria-label="Graph view"
+                style="margin-top: 3rem; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1.5rem;">
+                <h3 class="graph-bottom-title" style="font-size: 1rem; color: var(--color-text-dim);">Graph View</h3>
+                <div id="mini-graph" class="graph-container mini"></div>
+            </section>
+            {{ end }}
         </section>
-        {{ end }}
+
+        <aside></aside>
     </main>
 
     {{template "footer" .}}
 </body>
 
 </html>
-
-{{ end}}
+{{end}}

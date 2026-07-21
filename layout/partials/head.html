@@ -54,5 +54,85 @@
             hljs.highlightAll();
         }
     </script>
+
+    <script defer>
+        document.addEventListener("DOMContentLoaded", () => {
+            const alerts = {
+                NOTE: {type: "note", label: "Note", icon: "ⓘ"},
+                TIP: {type: "tip", label: "Tip", icon: "💡"},
+                IMPORTANT: {type: "important", label: "Important", icon: "💬"},
+                WARNING: {type: "warning", label: "Warning", icon: "⚠️"},
+                CAUTION: {type: "caution", label: "Caution", icon: "🚫"}
+            };
+
+            document.querySelectorAll(".markdown-body blockquote").forEach((bq) => {
+                const firstP = bq.querySelector("p");
+                if (!firstP) return;
+
+                const match = firstP.innerHTML.match(/^\[\!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\](?:\s*<br\s*\/?>)?\s*/i);
+                if (match) {
+                    const key = match[1].toUpperCase();
+                    const config = alerts[key];
+
+                    firstP.innerHTML = firstP.innerHTML.replace(match[0], "");
+
+                    bq.classList.add("markdown-alert", `markdown-alert-${config.type}`);
+
+                    const titleDiv = document.createElement("div");
+                    titleDiv.className = "markdown-alert-title";
+                    titleDiv.innerHTML = `<span>${config.icon}</span> <span>${config.label}</span>`;
+
+                    bq.insertBefore(titleDiv, firstP);
+                }
+            });
+        });
+    </script>
+
+    <script defer>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".markdown-body pre code").forEach((codeBlock) => {
+                const pre = codeBlock.parentElement;
+                if (!pre || pre.parentElement.classList.contains("code-wrapper")) return;
+
+                let captionText = "";
+
+                const rawClass = decodeURIComponent(codeBlock.className || "").replace(/&quot;/g, '"');
+                const classMatch = rawClass.match(/caption="([^"]+)"/i);
+
+                if (classMatch) {
+                    captionText = classMatch[1];
+                }
+                else if (codeBlock.innerHTML) {
+                    const codeLines = codeBlock.innerHTML.split('\n');
+                    const firstLine = codeLines[0].trim();
+
+                    const commentMatch = firstLine.match(/^(?:\/\/|#|< !--|\/\*)\s*caption="([^"]+)"(?:\s*-- >|\ s*\*\/)?$/i);
+
+                    if (commentMatch) {
+                        captionText = commentMatch[1];
+                        codeLines.shift();
+                        codeBlock.innerHTML = codeLines.join('\n').replace(/^\n/, '');
+                    }
+                }
+
+                if (captionText) {
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "code-wrapper";
+
+                    const captionDiv = document.createElement("div");
+                    captionDiv.className = "code-caption";
+                    captionDiv.textContent = captionText;
+
+                    pre.parentNode.insertBefore(wrapper, pre);
+                    wrapper.appendChild(pre);
+                    wrapper.appendChild(captionDiv);
+                }
+
+                if (typeof hljs !== 'undefined') {
+                    hljs.highlightElement(codeBlock);
+                }
+            });
+        });
+    </script>
 </head>
 {{end}}
