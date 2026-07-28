@@ -6,6 +6,9 @@
   "themeURL": "/static/styles/main.css",
   "navbar": [
     {
+      "Home": "index.html"
+    },
+    {
       "Blog": "collections/blog.html"
     },
     {
@@ -20,6 +23,8 @@
     "linkedin": "https://linkedin.com/in/pranav-v-bhat"
   },
   "collectionLayouts": {
-    "collections/blog.html": "blog"
+    "collections/blog.html": "blog",
+    "collections/notes.html": "notes",
+    "collections/clicks.html": "clicks"
   }
 }

@@ -1,8 +1,8 @@
 ---
-title: "Lost in Tokio: Understanding Rust's Async Runtime"
-date: ""
+title: "Lost in Tokio" 
+date: "2026-07-21"
 tags: [Rust, async, threads]
-description: "Exploring the architecture of Tokio"
+description: "Exploring the architecture of Rust's most popular Async Runtime"
 permalink: posts/{{ title | slug }}/index.html
 author_name: Pranav V Bhat
 author_link: "https://github.com/Prana-vvb"

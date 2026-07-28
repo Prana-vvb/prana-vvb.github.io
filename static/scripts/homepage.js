@@ -1,45 +1,20 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const response = await fetch('/index.json');
-        const indexData = await response.json();
 
-        const posts = Object.values(indexData)
-            .filter(post =>
-                post.url.includes('posts/') ||
-                post.url.includes('photos/') ||
-                post.url.includes('notes/')
-            )
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 3);
+    const container = document.getElementById('recent-posts-container');
+    if (container) {
+        const posts = Array.from(container.querySelectorAll('.sortable-post'));
 
-        const container = document.getElementById('recent-posts-container');
-
-        posts.forEach(post => {
-            const isPhoto = post.tags && post.tags.includes("photos");
-            const el = document.createElement('div');
-            el.className = isPhoto ? 'post-card photo-card' : 'post-card text-card';
-
-            if (isPhoto) {
-                el.innerHTML = `
-                    <a href="${post.url}">
-                        <img src="${post.previewimage || '/static/images/default-photo.png'}" alt="${post.title}" />
-                        <div class="photo-caption">${post.description || post.title}</div>
-                    </a>
-                `;
-            } else {
-                const tagsHtml = post.tags ? post.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
-                el.innerHTML = `
-                    <a href="${post.url}" style="text-decoration: none;">
-                        <h4>${post.title}</h4>
-                        <div class="tags-row">${tagsHtml}</div>
-                        <p class="post-snippet">${post.description || ''}</p>
-                    </a>
-                `;
-            }
-            container.appendChild(el);
+        posts.sort((a, b) => {
+            const dateA = new Date(a.getAttribute('data-date') || 0);
+            const dateB = new Date(b.getAttribute('data-date') || 0);
+            return dateB - dateA;
         });
-    } catch (err) {
-        console.error("Failed to load Anna index.json", err);
+
+        container.innerHTML = '';
+
+        posts.forEach(post => container.appendChild(post));
+
+        container.style.opacity = '1';
     }
 
     const lastfmUser = 'prana-vvb';
@@ -55,9 +30,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         const albumArt = track.image[3]['#text'] || '/static/images/default-album.png';
         const trackUrl = track.url;
 
-        document.getElementById('lastfm-status').style.display = 'none';
+        const statusEl = document.getElementById('lastfm-status');
+        if (statusEl) statusEl.style.display = 'none';
 
         const embedContainer = document.getElementById('spotify-embed');
+        if (!embedContainer) return;
+
         const customPlayer = document.createElement('a');
         customPlayer.href = trackUrl;
         customPlayer.target = "_blank";
@@ -88,7 +66,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         embedContainer.replaceWith(customPlayer);
 
     } catch (err) {
-        document.getElementById('lastfm-status').innerText = "Last.fm disconnected.";
-        document.getElementById('spotify-embed').style.display = 'none';
+        const statusEl = document.getElementById('lastfm-status');
+        if (statusEl) statusEl.innerText = "Last.fm disconnected.";
+
+        const embedContainer = document.getElementById('spotify-embed');
+        if (embedContainer) embedContainer.style.display = 'none';
     }
 });

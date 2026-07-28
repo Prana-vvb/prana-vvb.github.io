@@ -1,4 +1,4 @@
-{{define "blog"}}
+{{define "notes"}}
 {{template "head" .}}
 
 <body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
@@ -8,11 +8,11 @@
         <aside></aside>
 
         <section class="center-col">
-            <h1 style="font-size: 2rem; margin-bottom: 0.5rem; font-weight: 400; text-align: center;">posts</h1>
+            <h1 style="font-size: 2rem; margin-bottom: 0.5rem; font-weight: 400; text-align: center;">field notes</h1>
 
             <p
                 style="color: var(--color-text-dim); margin: 0 0 2rem 0; font-size: 0.95rem; line-height: 1.5; text-align: center;">
-                Blog posts about random topics that interest me
+                My notes on conferences, meetups and talks I have attended
             </p>
 
             <div class="post-list" style="display: flex; flex-direction: column;">
@@ -32,7 +32,7 @@
                     </p>
                 </article>
                 {{else}}
-                <p style="color: var(--color-text-dim);">No entries found.</p>
+                <p style="color: var(--color-text-dim);">No field notes found.</p>
                 {{end}}
             </div>
         </section>

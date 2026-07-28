@@ -1,10 +1,10 @@
 {{define "homepage"}}
 {{template "head" .}}
 
-<body>
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
     {{template "header" .}}
 
-    <main class="homepage-grid site-main">
+    <main class="homepage-grid site-main" style="flex: 1 0 auto; margin-top: 1rem;">
         <aside class="left-col">
             <div id="lastfm-status" style="margin-bottom: 1rem; color: var(--color-text-dim); font-size: 0.9rem;">
                 Loading...</div>
@@ -14,11 +14,12 @@
         </aside>
 
         <section class="center-col">
-            <h1>Pranav V Bhat</h1>
-            <p>I am a student and aspiring software engineer focused on backend infrastructure, distributed systems, and
+            <h1 style="text-align: center;">Pranav V Bhat</h1>
+            <p style="text-align: justify;">I am a student and aspiring software engineer focused on backend
+                infrastructure, distributed systems, and
                 systems programming in Rust.</p>
 
-            <div class="social-links" style="margin-top: 1.5rem;">
+            <div class="social-links" style="margin-top: 1.5rem; text-align: center;">
                 {{range $key, $value := .DeepDataMerge.LayoutConfig.Socials}}
                 <a href="{{$value}}" target="_blank"
                     style="margin: 0 0.5rem; text-decoration: underline; text-underline-offset: 4px;">{{$key}}</a>
@@ -26,19 +27,40 @@
             </div>
 
             <figure class="bottom-image" style="margin-top: 2rem;">
-                <img src="static/images/tmp.jpg">
+                <img src="static/images/chairs.jpg">
             </figure>
         </section>
 
-        <!-- Right Column: Server-Side Rendered Recent Updates -->
         <aside class="right-col">
-            <h3>Recent Updates</h3>
-            <div id="recent-posts-container" style="display: flex; flex-direction: column; gap: 1rem;">
-                <!-- Range over CollectionsMap to bypass the template.URL string indexing strictness -->
+            <h3 style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                Recent Uploads</h3>
+
+            <style>
+                #recent-posts-container::-webkit-scrollbar {
+                    width: 6px;
+                }
+
+                #recent-posts-container::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                #recent-posts-container::-webkit-scrollbar-thumb {
+                    background: #333;
+                    border-radius: 4px;
+                }
+
+                #recent-posts-container::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+            </style>
+
+            <div id="recent-posts-container"
+                style="display: flex; flex-direction: column; gap: 1rem; opacity: 0; transition: opacity 0.2s ease; max-height: 420px; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+
                 {{ range $colURL, $posts := .DeepDataMerge.CollectionsMap }}
-                {{ if eq (printf "%s" $colURL) "collections/blog.html" }}
-                {{ range $index, $post := $posts }}
-                {{ if lt $index 3 }}
+                {{ if or (eq (printf "%s" $colURL) "collections/blog.html") (eq (printf "%s" $colURL)
+                "collections/notes.html") }}
+                {{ range $post := $posts }}
 
                 {{ $isPhoto := false }}
                 {{ range $post.Frontmatter.Tags }}
@@ -46,16 +68,17 @@
                 {{ end }}
 
                 {{ if $isPhoto }}
-                <a href="/{{ $post.CompleteURL }}" class="post-card photo-card">
+                <a href="/{{ $post.CompleteURL }}" class="post-card photo-card sortable-post"
+                    data-date="{{ $post.Frontmatter.Date }}">
                     <img src="{{ if $post.Frontmatter.PreviewImage }}{{ $post.Frontmatter.PreviewImage }}{{ else }}/static/images/default-photo.png{{ end }}"
                         alt="{{ $post.Frontmatter.Title }}" />
                     <div class="photo-caption">{{ if $post.Frontmatter.Description }}{{ $post.Frontmatter.Description
                         }}{{ else }}{{ $post.Frontmatter.Title }}{{ end }}</div>
                 </a>
                 {{ else }}
-                <a href="/{{ $post.CompleteURL }}" class="post-card text-card" style="text-decoration: none;">
+                <a href="/{{ $post.CompleteURL }}" class="post-card text-card sortable-post"
+                    data-date="{{ $post.Frontmatter.Date }}" style="text-decoration: none;">
                     <h4>{{ $post.Frontmatter.Title }}</h4>
-
                     {{ if $post.Frontmatter.Tags }}
                     <div class="tags-row">
                         {{ range $post.Frontmatter.Tags }}
@@ -63,12 +86,10 @@
                         {{ end }}
                     </div>
                     {{ end }}
-
                     <p class="post-snippet">{{ $post.Frontmatter.Description }}</p>
                 </a>
                 {{ end }}
 
-                {{ end }}
                 {{ end }}
                 {{ end }}
                 {{ end }}
