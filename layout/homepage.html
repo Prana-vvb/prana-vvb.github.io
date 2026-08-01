@@ -72,13 +72,21 @@
                     data-date="{{ $post.Frontmatter.Date }}">
                     <img src="{{ if $post.Frontmatter.PreviewImage }}{{ $post.Frontmatter.PreviewImage }}{{ else }}/static/images/default-photo.png{{ end }}"
                         alt="{{ $post.Frontmatter.Title }}" />
-                    <div class="photo-caption">{{ if $post.Frontmatter.Description }}{{ $post.Frontmatter.Description
-                        }}{{ else }}{{ $post.Frontmatter.Title }}{{ end }}</div>
+                    <div class="photo-caption">
+                        {{ if $post.Frontmatter.Description }}{{ $post.Frontmatter.Description }}{{ else }}{{
+                        $post.Frontmatter.Title }}{{ end }}
+                    </div>
                 </a>
                 {{ else }}
                 <a href="/{{ $post.CompleteURL }}" class="post-card text-card sortable-post"
                     data-date="{{ $post.Frontmatter.Date }}" style="text-decoration: none;">
-                    <h4>{{ $post.Frontmatter.Title }}</h4>
+
+                    <div
+                        style="font-size: 0.7rem; font-family: monospace; color: white; text-transform: uppercase; margin-bottom: 0.25rem;">
+                        {{ if eq (printf "%s" $colURL) "collections/blog.html" }}Blog{{ else }}Field Notes{{ end }}
+                    </div>
+
+                    <h4 style="margin-top: 0;">{{ $post.Frontmatter.Title }}</h4>
                     {{ if $post.Frontmatter.Tags }}
                     <div class="tags-row">
                         {{ range $post.Frontmatter.Tags }}
