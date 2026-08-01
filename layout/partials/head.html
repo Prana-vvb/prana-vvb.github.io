@@ -8,15 +8,25 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{$PageData.Frontmatter.Title}}</title>
+    <title>
+        {{- if eq .PageURL "index.html" -}}
+        Home | {{ .DeepDataMerge.LayoutConfig.SiteTitle }}
+        {{- else if eq .PageURL "collections/blog.html" -}}
+        Blog | {{ .DeepDataMerge.LayoutConfig.SiteTitle }}
+        {{- else if eq .PageURL "collections/notes.html" -}}
+        Field Notes | {{ .DeepDataMerge.LayoutConfig.SiteTitle }}
+        {{- else if eq .PageURL "collections/clicks.html" -}}
+        Clicks | {{ .DeepDataMerge.LayoutConfig.SiteTitle }}
+        {{- else if $PageData.Frontmatter.Title -}}
+        {{ $PageData.Frontmatter.Title }} | {{ .DeepDataMerge.LayoutConfig.SiteTitle }}
+        {{- else -}}
+        {{ .DeepDataMerge.LayoutConfig.SiteTitle }}
+        {{- end -}}
+    </title>
     <meta name="color-scheme" content="light dark" />
 
     <link rel="stylesheet" href="/static/styles/main.css" />
 
-    <!-- <link rel="icon" href="/static/images/anna.png" /> -->
-    <!-- <link rel="icon" type="image/png" sizes="32x32" href="/static/images/anna.png" /> -->
-    <!-- <link rel="icon" type="image/png" sizes="16x16" href="/static/images/anna.png" /> -->
-    <!-- <link rel="apple-touch-icon" href="/static/images/anna.png" /> -->
     <meta name="theme-color" content="#0d1117" />
 
     <link id="hljs-dark" rel="stylesheet"

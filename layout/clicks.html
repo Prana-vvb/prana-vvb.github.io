@@ -143,7 +143,7 @@
                 {{range $filename, $caption := $item}}
                 <a href="/static/images/{{$filename}}" class="masonry-item lightbox-trigger"
                     data-src="/static/images/{{$filename}}" data-caption="{{$caption}}">
-                    <img src="/static/images/{{$filename}}" alt="{{$caption}}" loading="lazy" />
+                    <img src="/static/images/{{$filename}}" alt="{{$caption}}" loading="lazy" decoding="async" />
                 </a>
                 {{end}}
                 {{end}}
