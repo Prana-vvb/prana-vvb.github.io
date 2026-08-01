@@ -13,5 +13,5 @@ customFields:
   - sonne.JPG: "Sonne"
   - islands.jpg: "Islands"
   - rustconf_2026.JPG: "Rust India Conf 2026"
-  - sakura.jpg: "Sakura at PESU"
+  - sakura.jpg: "sakura@pesu"
 ---

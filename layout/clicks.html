@@ -41,6 +41,7 @@
                     display: block;
                     width: 100%;
                     box-sizing: border-box;
+                    cursor: pointer;
                 }
 
                 .masonry-item img {
@@ -54,21 +55,99 @@
                 .masonry-item:hover img {
                     opacity: 0.85;
                 }
+
+                #lightbox {
+                    display: none;
+                    position: fixed;
+                    z-index: 9999;
+                    left: 0;
+                    top: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background-color: rgba(5, 5, 5, 0.92);
+                    backdrop-filter: blur(8px);
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                }
+
+                .lightbox-content-wrapper {
+                    position: relative;
+                    max-width: 90%;
+                    max-height: 80vh;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                #lightbox-img {
+                    max-width: 100%;
+                    max-height: 75vh;
+                    border-radius: 4px;
+                    object-fit: contain;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                }
+
+                #lightbox-caption {
+                    margin-top: 1.5rem;
+                    color: var(--color-text-dim, #ccc);
+                    font-family: monospace;
+                    font-size: 0.9rem;
+                    text-align: center;
+                }
+
+                .lightbox-btn {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: white;
+                    font-size: 2rem;
+                    font-weight: 300;
+                    cursor: pointer;
+                    user-select: none;
+                    padding: 1rem;
+                    transition: color 0.2s;
+                }
+
+                .lightbox-btn:hover {
+                    color: var(--color-text-dim, #aaa);
+                }
+
+                .lightbox-prev {
+                    left: 2rem;
+                }
+
+                .lightbox-next {
+                    right: 2rem;
+                }
+
+                .lightbox-close {
+                    position: absolute;
+                    top: 2rem;
+                    right: 2.5rem;
+                    color: white;
+                    font-size: 2rem;
+                    cursor: pointer;
+                    transition: color 0.2s;
+                }
+
+                .lightbox-close:hover {
+                    color: var(--color-text-dim, #aaa);
+                }
             </style>
 
             <div class="masonry-grid">
                 {{range index .DeepDataMerge.CollectionsMap .PageURL}}
-
                 {{if .Frontmatter.CustomFields}}
                 {{range $item := .Frontmatter.CustomFields}}
                 {{range $filename, $caption := $item}}
-                <a href="/static/images/{{$filename}}" target="_blank" class="masonry-item" title="{{$caption}}">
+                <a href="/static/images/{{$filename}}" class="masonry-item lightbox-trigger"
+                    data-src="/static/images/{{$filename}}" data-caption="{{$caption}}">
                     <img src="/static/images/{{$filename}}" alt="{{$caption}}" loading="lazy" />
                 </a>
                 {{end}}
                 {{end}}
                 {{end}}
-
                 {{else}}
                 <p style="color: var(--color-text-dim); text-align: center;">No photos found.</p>
                 {{end}}
@@ -78,7 +157,87 @@
         <aside></aside>
     </main>
 
+    <div id="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <span class="lightbox-btn lightbox-prev">&#10094;</span>
+        <span class="lightbox-btn lightbox-next">&#10095;</span>
+        <div class="lightbox-content-wrapper">
+            <img id="lightbox-img" src="" alt="">
+            <div id="lightbox-caption"></div>
+        </div>
+    </div>
+
     {{template "footer" .}}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const triggers = document.querySelectorAll('.lightbox-trigger');
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            const caption = document.getElementById('lightbox-caption');
+            const closeBtn = document.querySelector('.lightbox-close');
+            const prevBtn = document.querySelector('.lightbox-prev');
+            const nextBtn = document.querySelector('.lightbox-next');
+
+            let currentIndex = 0;
+            const images = Array.from(triggers).map(t => ({
+                src: t.getAttribute('data-src'),
+                caption: t.getAttribute('data-caption')
+            }));
+
+            if (images.length === 0) return;
+
+            function openLightbox(index) {
+                currentIndex = index;
+                img.src = images[currentIndex].src;
+                caption.textContent = images[currentIndex].caption;
+                lightbox.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                lightbox.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+
+            function showNext(e) {
+                if (e) e.stopPropagation();
+                currentIndex = (currentIndex + 1) % images.length;
+                openLightbox(currentIndex);
+            }
+
+            function showPrev(e) {
+                if (e) e.stopPropagation();
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                openLightbox(currentIndex);
+            }
+
+            triggers.forEach((trigger, index) => {
+                trigger.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    openLightbox(index);
+                });
+            });
+
+            closeBtn.addEventListener('click', closeLightbox);
+            nextBtn.addEventListener('click', showNext);
+            prevBtn.addEventListener('click', showPrev);
+
+            lightbox.addEventListener('click', function (e) {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (lightbox.style.display === 'flex') {
+                    if (e.key === 'Escape') closeLightbox();
+                    if (e.key === 'ArrowRight') showNext();
+                    if (e.key === 'ArrowLeft') showPrev();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
