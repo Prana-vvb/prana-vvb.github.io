@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Anna SSG to GitHub Pages
 
 on:
   push:
@@ -22,20 +22,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 
+          path: 'site' 
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: Download and setup Anna
+      - name: Download and setup Anna SSG
         run: |
+          # Downloads to the root workspace (one level above 'site')
           wget https://github.com/anna-ssg/anna/releases/download/v4.0.0-rc-6/anna_Linux_x86_64.tar.gz
           tar -xzf anna_Linux_x86_64.tar.gz
           chmod +x anna
 
       - name: Execute dev script
         run: |
+          # Navigate into the site folder to run your script
+          cd site
           chmod +x dev.sh
           ./dev.sh
 
