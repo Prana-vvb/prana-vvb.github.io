@@ -3,7 +3,6 @@ title: "Lost in Tokio"
 date: "2026-07-21"
 tags: [Rust, async, threads]
 description: "Exploring the architecture of Rust's most popular Async Runtime"
-permalink: posts/{{ title | slug }}/index.html
 author_name: Pranav V Bhat
 author_link: "https://github.com/Prana-vvb"
 collections: ["blog"]
@@ -12,28 +11,64 @@ collections: ["blog"]
 This post focuses on the architecture of [Tokio](https://tokio.rs/), Rust's most popular async runtime. But to understand Tokio and why it exists, we must first look at the problems it was built to solve.
 
 ## Level 0: Synchronous programming
+<hr/>
 
-Most code that you write is executed sequentially<br/><br/>
+Most code that you write is executed sequentially
 
-<div class="code-wrapper"><pre><code class="language-rust">fn synchronous() {&#10;    println!("1");&#10;    println!("2");&#10;    println!("3");&#10;}</code></pre><div class="code-caption">Completely innocent synchronous function</div></div>
+```rust caption="Completely innocent synchronous function"
+fn synchronous() {
+    println!("1");
+    println!("2");
+    println!("3");
+}
+```
 
 This *synchronous* way is perfectly fine for most tasks, but some operations (like network requests or I/O waits) in the chain can be painfully slow.
-They 'block' the program from progressing until they are done, resulting in your application just sitting there doing nothing.<br/><br/>
+They 'block' the program from progressing until they are done, resulting in your application just sitting there doing nothing.
 
-<div class="code-wrapper"><pre><code class="language-rust">fn evil_synchronous() {&#10;    println!("Requesting user data...");&#10;    &#10;    // Execution cannot continue until the database responds.&#10;    let response = get_from_db("Geronimo").unwrap(); &#10;    &#10;    println!("Got data: {response}");&#10;}</code></pre><div class="code-caption">Evil and intimidating blocking code</div></div>
+```rust caption="Evil and intimidating blocking code"
+fn evil_synchronous() {
+    println!("Requesting user data...");
+    
+    // Execution cannot continue until the database responds.
+    let response = get_from_db("Geronimo").unwrap(); 
+    
+    println!("Got data: {response}");
+}
+```
 
 Blocking delays like this are common when applications wait for I/O operations to finish. But what if your program could do other work while it waits?
 
 ## Level 1: Concurrency and Parallelism through OS Threads
+<hr/>
 
 A very naive way to do this would be to [create a new process for each task](https://www.microsoft.com/en-us/research/wp-content/uploads/2019/04/fork-hotos19.pdf#page=2). But this would be very expensive as a new process would require its own isolated memory context and common data would have to be passed between these processes.
 
 Instead, we use multiple [*threads*](https://en.wikipedia.org/wiki/Thread_(computing)) inside a single process.
 > *Thread*: The smallest sequence of programmed instructions that can be managed independently by a scheduler.
 
-In Rust, we can use the native `std::thread` interface<br/><br/>
+In Rust, we can use the native `std::thread` interface
 
-<div class="code-wrapper"><pre><code class="language-rust">use std::thread;&#10;use std::time::Duration;&#10;&#10;fn main() {&#10;    let handle = thread::spawn(|| {&#10;        for i in 1..10 {&#10;            println!("Spawned thread {i}");&#10;            thread::sleep(Duration::from_millis(1));&#10;        }&#10;    });&#10;&#10;    for i in 1..5 {&#10;        println!("{i} from the main thread");&#10;        thread::sleep(Duration::from_millis(1));&#10;    }&#10;&#10;    handle.join().unwrap(); // main thread should not exit until all spawned threads are done&#10;}</code></pre><div class="code-caption">Concurrent execution with OS threads (From doc.rust-lang.org/book/ch16-01-threads.html)</div></div>
+```rust caption="Concurrent execution with OS threads (From doc.rust-lang.org/book/ch16-01-threads.html)"
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    let handle = thread::spawn(|| {
+        for i in 1..10 {
+            println!("Spawned thread {i}");
+            thread::sleep(Duration::from_millis(1));
+        }
+    });
+
+    for i in 1..5 {
+        println!("{i} from the main thread");
+        thread::sleep(Duration::from_millis(1));
+    }
+
+    handle.join().unwrap(); // main thread should not exit until all spawned threads are done
+}
+```
 
 > [!NOTE]
 > [**The basic difference between Concurrency and Parallelism**](https://rust-lang.github.io/book/ch17-00-async-await.html#parallelism-and-concurrency)
@@ -45,11 +80,12 @@ In Rust, we can use the native `std::thread` interface<br/><br/>
 Although OS threads provide concurrency (and parallelism on multi-core hardware) and are cheaper than creating an entirely new process, they still are relatively expensive.
 
 Historically, the simplest way to handle network traffic was to spawn one OS thread per connection. However, OS threads are heavy.
-On Linux, each thread reserves a default 8MB of virtual memory for its stack. If an application tried to serve 100,000 concurrent connections this way, it would demand 800GB of virtual address space.
+On Linux, each thread reserves a default 8MB of virtual memory for its stack. If an application tried to [serve 10,000 concurrent connections](https://en.wikipedia.org/wiki/C10k_problem) this way, it would demand 80GB of virtual address space.
 
 But virtual address space is cheap and abundant on modern systems. The real problem is that the OS kernel has to constantly pause and resume these threads (context switching). This is significantly more expensive while also potentially invalidating cache locality. The CPU would spend all its time just juggling threads rather than doing actual work.
 
 ## Level 2: Cooperative Multitasking with [async/.await](https://os.phil-opp.com/async-await/)
+<hr/>
 
 > [!NOTE]
 > [Preemptive VS Cooperative multitasking](https://www.geeksforgeeks.org/operating-systems/difference-between-preemptive-and-cooperative-multitasking/)
@@ -64,13 +100,23 @@ Polling is basically giving the future the opportunity to progress by asking, "H
 
 Rust gives us the `async/.await` syntax, allowing us to write asynchronous code in a way that looks similar to synchronous code. This syntax will be [familiar if you're coming from JavaScript or Python](https://en.wikipedia.org/wiki/Async/await#Implementations).
 
-For example:<br/><br/>
+For example:
 
-<div class="code-wrapper"><pre><code class="language-rust">fn synchronous_io() {&#10;    let resp = fetch_data();&#10;    println!("{resp}");&#10;}</code></pre><div class="code-caption">Standard, blocking I/O</div></div>
+```rust caption="Standard, blocking I/O"
+fn synchronous_io() {
+    let resp = fetch_data();
+    println!("{resp}");
+}
+```
 
-Can be written as:<br/><br/>
+Can be written as:
 
-<div class="code-wrapper"><pre><code class="language-rust">async fn asynchronous_io() {&#10;    let resp = fetch_data_async().await;&#10;    println!("{resp}");&#10;}</code></pre><div class="code-caption">Asynchronous I/O using async/.await</div></div>
+```rust caption="Asynchronous I/O using async/.await"
+async fn asynchronous_io() {
+    let resp = fetch_data_async().await;
+    println!("{resp}");
+}
+```
 
 As you can see, the main differences are the `async` keyword in the function definition and the `.await` postfix operator after an async function call.<br/>
 But what exactly are they doing?
@@ -83,7 +129,7 @@ Before doing so, the awaited future typically stores a [`Waker`](https://doc.rus
 
 Later, when the async function is polled again, the state machine resumes execution from the previously saved state.
 
-![Simplified state machine generated from async fn asynchronous_io()](https://gist.githubusercontent.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/1192d18e545b612c58f1c13ea6e1bc64dabab033/tokio1.svg)
+![Simplified state machine generated from async fn asynchronous_io()](https://gist.github.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/56b3474a142b488d7bc4e68c88ee26a220c7c67c/tokio_1.svg)
 
 Very neat! Now let us run this function.
 
@@ -128,6 +174,7 @@ The reason `main` cannot be `async` is that someone has to drive the `Future` re
 An async fn doesn't execute by itself. Calling it just constructs a value containing all the state required to perform the work, but not when. Futures are lazy, so unless something repeatedly polls them, they never make progress. So who does the polling?
 
 ## Level 3: Async runtimes
+<hr/>
 
 This is where an async runtime comes into play. Most languages that support async have an async runtime built into the core language runtime and thus support async functions out of the box. Rust on the other hand provides only the foundation such as the `Future` and the `async/.await` syntax but no async runtime.
 

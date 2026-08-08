@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
 
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: CCBot
+User-agent: Anthropic-ai
+User-agent: Bytespider
+Disallow: /
+
 Sitemap: {{.BaseURL}}/sitemap.xml
