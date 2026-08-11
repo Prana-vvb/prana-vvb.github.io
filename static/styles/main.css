@@ -1,3 +1,18 @@
+:root {
+    color-scheme: dark;
+    --color-background: #0d1117;
+    --color-surface: #161b22;
+    --color-border: #30363d;
+    --color-text: #c9d1d9;
+    --color-text-dim: #8b949e;
+    --color-primary: #58a6ff;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
+
 /* Layout & Grid System */
 .homepage-grid {
     display: grid;
@@ -67,11 +82,21 @@
     display: block;
     text-decoration: none;
     transition: border-color 0.2s ease, background-color 0.2s ease;
+    color: var(--color-text, #c9d1d9);
 }
 
 .post-card:hover {
     border-color: var(--color-primary, #58a6ff);
     background: rgba(255, 255, 255, 0.02);
+}
+
+.post-card h3 {
+    color: var(--color-text, #c9d1d9);
+    transition: color 0.2s ease;
+}
+
+.post-card:hover h3 {
+    color: var(--color-primary, #58a6ff);
 }
 
 .text-card h4 {
@@ -306,3 +331,35 @@ pre code {
     color: inherit;
     font-size: 1em;
 }
+
+/* Markdown Body Links & Hover Highlight */
+.markdown-body a {
+    color: var(--color-primary, #58a6ff);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: background-color 0.2s ease, color 0.2s ease, padding 0.2s ease;
+    border-radius: 3px;
+}
+
+.markdown-body a:hover {
+    background-color: rgba(88, 166, 255, 0.18);
+    color: #79c0ff;
+    padding: 0 3px;
+}
+
+.post-title-link {
+    color: var(--color-text, #c9d1d9);
+    transition: color 0.2s ease;
+}
+
+.post-title-link:hover {
+    color: var(--color-primary, #58a6ff);
+}
+
+.navitem {
+    color: var(--color-text, #c9d1d9);
+    transition: color 0.2s ease;
+}
+
+.navitem:hover {
+    color: var(--color-primary, #58a6ff);}

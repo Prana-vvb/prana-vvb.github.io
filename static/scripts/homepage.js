@@ -49,16 +49,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             text-decoration: none;
             color: var(--color-text);
             margin-top: 1rem;
-            transition: transform 0.2s ease;
         `;
 
         customPlayer.innerHTML = `
             <img src="${albumArt}" alt="Album Art" style="width: 64px; height: 64px; border-radius: 8px; margin-right: 12px; object-fit: cover;">
             <div style="display: flex; flex-direction: column; overflow: hidden;">
-                <span style="font-size: 0.8rem; font-weight: bold; color: var(--color-primary); margin-bottom: 4px; text-transform: uppercase;">
+                <span style="font-size: 0.8rem; font-weight: bold; color: var(--color-text-dim); margin-bottom: 4px; text-transform: uppercase;">
                     ${track['@attr'] && track['@attr'].nowplaying ? '▶ Now Playing' : 'Recently Played'}
                 </span>
-                <strong style="font-size: 1rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">${trackName}</strong>
+                <strong style="font-size: 1rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; color: var(--color-text);">${trackName}</strong>
                 <span style="font-size: 0.9rem; color: var(--color-text-dim); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">${artistName}</span>
             </div>
         `;

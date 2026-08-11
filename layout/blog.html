@@ -19,7 +19,7 @@
                 {{range index .DeepDataMerge.CollectionsMap .PageURL}}
                 <article class="post-item" style="padding: 2rem 0; border-top: 1px solid rgba(255, 255, 255, 0.1);">
                     <h2 style="margin: 0 0 0.25rem 0; font-size: 1.35rem; font-weight: 600;">
-                        <a href="/{{.CompleteURL}}" style="text-decoration: none; color: var(--color-primary);">
+                        <a href="/{{.CompleteURL}}" class="post-title-link" style="text-decoration: none;">
                             {{.Frontmatter.Title}}
                         </a>
                     </h2>
