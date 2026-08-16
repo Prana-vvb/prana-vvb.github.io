@@ -42,7 +42,6 @@ body {
 
 .center-col {
     grid-column: 2;
-    text-align: justify;
     min-width: 0;
     overflow-wrap: break-word;
     word-break: break-word;
@@ -230,6 +229,14 @@ body {
 
 .markdown-alert-caution .markdown-alert-title {
     color: #f85149;
+}
+
+.markdown-alert p {
+    margin-bottom: 0.75rem !important;
+}
+
+.markdown-alert p:last-child {
+    margin-bottom: 0 !important;
 }
 
 /* Code Blocks & Captions */

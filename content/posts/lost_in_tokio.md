@@ -73,9 +73,9 @@ fn main() {
 > [!NOTE]
 > [**The basic difference between Concurrency and Parallelism**](https://rust-lang.github.io/book/ch17-00-async-await.html#parallelism-and-concurrency)
 >
-> **Concurrency** is about structuring multiple independent tasks to execute and progress in overlapping time periods. On a single core, the OS achieves this by rapidly switching between tasks.
+> ***Concurrency*** is about structuring multiple independent tasks to execute and progress in overlapping time periods. On a single core, the OS achieves this by rapidly switching between tasks.
 >
-> **Parallelism** is when tasks are literally run at the same time across multiple CPU cores.
+> ***Parallelism*** is when tasks are literally run at the same time across multiple CPU cores.
 
 Although OS threads provide concurrency (and parallelism on multi-core hardware) and are cheaper than creating an entirely new process, they still are relatively expensive.
 
@@ -90,11 +90,11 @@ But virtual address space is cheap and abundant on modern systems. The real prob
 > [!NOTE]
 > [Preemptive VS Cooperative multitasking](https://www.geeksforgeeks.org/operating-systems/difference-between-preemptive-and-cooperative-multitasking/)
 >
-> **Preemptive multitasking**: The OS allocates each thread a time slice to execute in and forcibly pauses the thread when its time is up no matter what it is doing and runs the next scheduled thread.
+> ***Preemptive multitasking***: The OS allocates each thread a time slice to execute in and forcibly pauses the thread when its time is up no matter what it is doing and runs the next scheduled thread.
 >
-> **Cooperative multitasking**: Each task voluntarily yields control back when it is idle or has hit a blocking point, giving us a lower context switching overhead.
+> ***Cooperative multitasking***: Each task voluntarily yields control back when it is idle or has hit a blocking point, giving us a lower context switching overhead.
 
-Luckily for us, Rust provides a [zero-cost abstraction](https://stackoverflow.com/a/69178445) in the form of the [`Future`](https://rust-lang.github.io/async-book/02_execution/02_future.html) trait. Futures are analogous to a `Promise` from JavaScript, with the main difference being that a `Promise` is eagerly executed by the JavaScript runtime while a `Future` is lazy until it is polled.
+Luckily for us, Rust provides a [zero-cost abstraction](https://stackoverflow.com/a/69178445) in the form of the [`Future`](https://rust-lang.github.io/async-book/02_execution/02_future.html) trait. Futures are analogous to a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) from JavaScript, with the main difference being that a `Promise` is eagerly executed by the JavaScript runtime while a `Future` is lazy until it is polled.
 
 Polling is basically giving the future the opportunity to progress by asking, "Hey, make some progress on your work now" The `Future` can then respond with either "No, I can't progress now" (`Poll::Pending`) or "Yes, I'm done. Here is the result" (`Poll::Ready(val)`).
 
@@ -182,3 +182,9 @@ This is mainly due to Rust being used in many different areas from web developme
 
 > "Rust caters to a vast array of use cases. We simply cannot bundle everything into the core standard library, but the ecosystem provides a crate for almost every need. Just use one of those"
 > — Paraphrased quote from [Niko Matsakis](https://smallcultfollowing.com/babysteps/), Core developer on the Rust programming language
+
+> [!WARNING]
+> Disclaimer: Tokio is actively being developed, so some information here may quickly become out-of-date.
+> We will be focusing on parts of [tokio-rs/tokio](https://github.com/tokio-rs/tokio) v1.53.1 for the rest of this blog
+
+
