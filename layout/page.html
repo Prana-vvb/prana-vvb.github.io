@@ -48,14 +48,6 @@
                     {{$PageData.Body}}
                 </div>
             </article>
-
-            {{ if ne (len $PageData.Frontmatter.Tags) 0 }}
-            <section class="graph-bottom" aria-label="Graph view"
-                style="margin-top: 3rem; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1.5rem;">
-                <h3 class="graph-bottom-title" style="font-size: 1rem; color: var(--color-text-dim);">Graph View</h3>
-                <div id="mini-graph" class="graph-container mini"></div>
-            </section>
-            {{ end }}
         </section>
 
         <aside></aside>
