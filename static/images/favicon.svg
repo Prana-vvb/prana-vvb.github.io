@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="1000" height="500">
+  <g fill="none" stroke="#55ffe0" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Outer wing silhouette -->
+    <path
+      d="M500 90
+         L455 135
+         L405 125
+         L350 165
+         L285 145
+         L220 190
+         L135 175
+         L55 225
+         L135 235
+         L210 265
+         L285 255
+         L350 295
+         L405 275
+         L455 310
+         L500 410
+         L545 310
+         L595 275
+         L650 295
+         L715 255
+         L790 265
+         L865 235
+         L945 225
+         L865 175
+         L780 190
+         L715 145
+         L650 165
+         L595 125
+         L545 135
+         Z"
+      stroke-width="8"
+    />
+
+    <!-- Central command spear -->
+    <path
+      d="M500 55
+         L535 130
+         L520 185
+         L500 235
+         L480 185
+         L465 130
+         Z"
+      stroke-width="8"
+    />
+
+    <!-- Left geometric feather plates -->
+    <path d="M465 145 L405 125 L350 165 L450 175 Z" stroke-width="6"/>
+    <path d="M450 180 L350 165 L285 205 L430 210 Z" stroke-width="6"/>
+    <path d="M430 215 L285 205 L210 235 L410 245 Z" stroke-width="6"/>
+    <path d="M410 250 L210 235 L285 255 L405 275 Z" stroke-width="6"/>
+
+    <!-- Right geometric feather plates -->
+    <path d="M535 145 L595 125 L650 165 L550 175 Z" stroke-width="6"/>
+    <path d="M550 180 L650 165 L715 205 L570 210 Z" stroke-width="6"/>
+    <path d="M570 215 L715 205 L790 235 L590 245 Z" stroke-width="6"/>
+    <path d="M590 250 L790 235 L715 255 L595 275 Z" stroke-width="6"/>
+
+    <!-- Lower command wings -->
+    <path d="M455 265 L405 275 L350 295 L445 300 Z" stroke-width="6"/>
+    <path d="M545 265 L595 275 L650 295 L555 300 Z" stroke-width="6"/>
+
+    <!-- Center insignia -->
+    <circle cx="500" cy="225" r="30" stroke-width="6"/>
+    <path d="M500 195 L510 220 L500 255 L490 220 Z" stroke-width="5"/>
+    <path d="M485 225 H515" stroke-width="5"/>
+
+    <!-- Small tactical accents -->
+    <path d="M110 225 H190" stroke-width="5"/>
+    <path d="M810 225 H890" stroke-width="5"/>
+    <path d="M165 205 L210 220" stroke-width="4"/>
+    <path d="M835 205 L790 220" stroke-width="4"/>
+  </g>
+
+  <!-- Subtle luminous core -->
+  <circle cx="500" cy="225" r="8" fill="#a8fff0"/>
+</svg>
