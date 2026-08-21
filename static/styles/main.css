@@ -379,6 +379,7 @@ pre code {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    touch-action: pan-y;
 }
 
 .lightbox-content-wrapper {
@@ -396,6 +397,8 @@ pre code {
     border-radius: 4px;
     object-fit: contain;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 #lightbox-caption {
@@ -491,6 +494,11 @@ code {
 }
 
 @media (max-width: 900px) {
+
+    .lightbox-prev,
+    .lightbox-next {
+        display: none !important;
+    }
 
     .homepage-grid,
     .centered-page-grid {
