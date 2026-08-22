@@ -8,7 +8,7 @@ author_link: "https://github.com/Prana-vvb"
 collections: ["blog"]
 ---
 
-Here, I try to get an abstracted overview of Tokio's architecture to build the foundation needed to understand its internals in depth later, To understand Tokio and why it exists, we must first look at the problems it was built to solve. We'll start with the simplest model of execution and gradually introduce the abstractions that lead us to an async runtime.
+Here, I try to get an abstracted overview of Tokio's architecture to build the foundation needed to understand its internals in depth later. To understand Tokio and why it exists, we must first look at the problems it was built to solve. We'll start with the simplest model of execution and gradually introduce the abstractions that lead us to an async runtime.
 
 ## Level 0: Synchronous programming
 <hr/>
@@ -184,6 +184,8 @@ This is mainly due to Rust being used in many different areas from web developme
 >
 > — Paraphrased quote from [Niko Matsakis](https://smallcultfollowing.com/babysteps/), Core developer on the Rust programming language
 
+Tokio is the mostly widely used async runtime at the time of writing and thus will be our focus.
+
 > [!WARNING]
 > Disclaimer: Tokio is actively being developed, so some information here may quickly become out-of-date.
 > We will be focusing on parts of [tokio-rs/tokio](https://github.com/tokio-rs/tokio) v1.53.1 for the rest of this blog
@@ -275,9 +277,13 @@ A worker may run out of tasks in both its local and the global queue even while 
 
 The stealing operation immediately returns the last task in the stolen batch to the thief for execution and then continues normally.
 
+A neat optimization is that each worker has a single element task slot. Any task placed in this slot can bypass both the local and global queue and gets executed first in the next iteration. This effectively results in the last scheduled task to be run next (LIFO). This optimization improves cache locality which benefits message passing patterns and helps to reduce latency.
+
 ![Work stealing](https://gist.githubusercontent.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/ccda86cac78522dfcd567b76a1b16d514dae3fb8/work_stealing.svg)
 
 So in the above diagram, Worker 2 would execute Task 3 first and then Task 1 and Task 2 (`[3]->[1]->[2]`). This lets the thief begin executing immediately rather than enqueueing the entire stolen batch and then performing another queue operation to obtain its first task.
+
+Work-stealing involves concurrent, unsynchronized access to head and tail across threads. Because stolen tasks cross thread boundaries, any task spawned on a multi-threaded runtime is forced to satisfy [`Send`](https://doc.rust-lang.org/std/marker/trait.Send.html) + [`'static`](https://doc.rust-lang.org/std/keyword.static.html) bounds. Single-threaded Tokio on the other hand requires only `'static` to be satisfied since there is no work stealing.
 
 ### Actually running Tasks
 <hr/>
@@ -286,9 +292,13 @@ We've established before that Tokio tasks are lightweight units of work. These t
 
 When a task reaches a state where it cannot make any progress without waiting, it returns `Poll::Pending`. The I/O operation registers interest in the resource, while the task provides a `Waker` that can be used to schedule it again when that resource becomes ready.
 
-![A task's lifecycle](https://gist.github.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/5319d304d30576c87e9ea21519c09f115868d74d/tokio_whole.svg)
+A task is a single heap allocation storing a `Header`, `Trailer`, user `Future`, and scheduler pointers. A Waker wraps a raw pointer (`NonNull<Header>`) with a custom `RawWakerVTable` (Tells what operation to perform on the pointer). Calling `.wake()` executes an atomic state transition directly on the task’s `Header` flags. If the transition succeeds and the task is woken, the task memory pointer is re-enqueued into a scheduler queue.
+
+![A task's lifecycle](https://gist.github.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/05170090e3e866ba298702ba69ccd02a8bb7a88d/tokio_whole.svg)
 
 The I/O driver waits for events from the OS for the registered resources and wake the tasks when they become available. Tokio does not actually handle each specific I/O driver by itself but instead relies on the [`mio`](https://github.com/tokio-rs/mio) crate to abstract system specific drivers and provide a common API for all of them.
+
+Note that the I/O driver mechanism is not controlled by a dedicated thread but is integrated into each and every worker.
 
 I/O is only one source of task wakeups. Timers and asynchronous synchronization primitives(`tokio::sync::*`) can also cause a pending task to become runnable again. A timer can wake a task when its deadline expires, while primitives such as channels, notifications, and semaphores can wake tasks when the state they are waiting for changes.
 
