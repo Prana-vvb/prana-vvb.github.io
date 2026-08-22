@@ -1,7 +1,7 @@
 ---
 title: "Lost in Tokio" 
 date: "2026-08-21"
-tags: [Rust, Tokio, async, concurrency, scheduling, I/O, threads]
+tags: [Rust, Tokio, async, concurrency, threads]
 description: "Exploring the architecture of Rust's most popular Async Runtime"
 author_name: Pranav V Bhat
 author_link: "https://github.com/Prana-vvb"
