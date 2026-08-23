@@ -129,7 +129,7 @@ Before doing so, the awaited future typically stores a [`Waker`](https://doc.rus
 
 Later, when the async function is polled again, the state machine resumes execution from the previously saved state.
 
-![Simplified state machine generated from async fn asynchronous_io()](https://gist.github.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/56b3474a142b488d7bc4e68c88ee26a220c7c67c/tokio_1.svg)
+![Simplified state machine generated from async fn asynchronous_io()](https://gist.githubusercontent.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/56b3474a142b488d7bc4e68c88ee26a220c7c67c/tokio_1.svg)
 
 Very neat! Now let us run this function.
 
@@ -224,7 +224,7 @@ This scheduler is responsible for deciding which runnable task should be execute
 > [!NOTE]
 > Tokio, by default, is multi-threaded but can be configured to be a single-threaded event loop AKA `current_thread` which can actually be easier to work with in most cases as argued [here](https://emschwartz.me/async-rust-can-be-a-pleasure-to-work-with-without-send-sync-static/)
 
-![The Tokio M:N scheduler](https://gist.github.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/8237ae9a3e7ae94e417c7ad59a3fa5151cf7f754/scheduler.svg)
+![The Tokio M:N scheduler](https://gist.githubusercontent.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/8237ae9a3e7ae94e417c7ad59a3fa5151cf7f754/scheduler.svg)
 
 As you can see, Tokio solves this by having a global queue of tasks (implemented as a FIFO linked list) shared between all threads along with local queues for each thread/worker.
 
@@ -269,7 +269,7 @@ pub(crate) struct Inner<T: 'static> {
 
 A worker first checks its local queue for any runnable tasks and only checks the global queue if it runs out of tasks or after a configurable number of local tasks have been scheduled.
 
-![Hirerarchy of choosing tasks](https://gist.github.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/4aa31c580268f968857d4d039cadecd041f1410f/task_hirearchy.svg)
+![Hirerarchy of choosing tasks](https://gist.githubusercontent.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/4aa31c580268f968857d4d039cadecd041f1410f/task_hirearchy.svg)
 
 This can be compared to how cache locality works. First try to retrieve from the closest source and if not found, move to more distant sources. And similar to how you reach for data from memory when it is not in cache, worker threads reach to steal tasks from other workers.
 
@@ -294,7 +294,7 @@ When a task reaches a state where it cannot make any progress without waiting, i
 
 A task is a single heap allocation storing a `Header`, `Trailer`, user `Future`, and scheduler pointers. A Waker wraps a raw pointer (`NonNull<Header>`) with a custom `RawWakerVTable` (Tells what operation to perform on the pointer). Calling `.wake()` executes an atomic state transition directly on the task’s `Header` flags. If the transition succeeds and the task is woken, the task memory pointer is re-enqueued into a scheduler queue.
 
-![A task's lifecycle](https://gist.github.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/05170090e3e866ba298702ba69ccd02a8bb7a88d/tokio_whole.svg)
+![A task's lifecycle](https://gist.githubusercontent.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/05170090e3e866ba298702ba69ccd02a8bb7a88d/tokio_whole.svg)
 
 The I/O driver waits for events from the OS for the registered resources and wake the tasks when they become available. Tokio does not actually handle each specific I/O driver by itself but instead relies on the [`mio`](https://github.com/tokio-rs/mio) crate to abstract system specific drivers and provide a common API for all of them.
 
@@ -324,7 +324,7 @@ const NOTIFIED: usize = 3;
 
 They are connected as below
 
-![State machine for the parking mechanism](https://gist.github.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/1a6b10c46505be7bff79d0b7a807442b583a93f3/parking_state_machine.svg)
+![State machine for the parking mechanism](https://gist.githubusercontent.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/1a6b10c46505be7bff79d0b7a807442b583a93f3/parking_state_machine.svg)
 
 This state machine is required to prevent a race condition where a wake up notification is issued just before the worker actually sleeps, causing it to sleep forever.
 
@@ -333,4 +333,4 @@ This state machine is required to prevent a race condition where a wake up notif
 
 Putting it all together, let us follow a single asynchronous operation through Tokio's event loop
 
-![Tokio basic event loop](https://gist.github.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/d1b3be1c0b8a82da128d4f375f0d2c02d64fd175/basic_eloop.svg)
+![Tokio basic event loop](https://gist.githubusercontent.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/d1b3be1c0b8a82da128d4f375f0d2c02d64fd175/basic_eloop.svg)
