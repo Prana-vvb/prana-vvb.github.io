@@ -47,7 +47,10 @@ A very naive way to do this would be to [create a new process for each task](htt
 Instead, we use multiple [*threads*](https://en.wikipedia.org/wiki/Thread_(computing)) inside a single process.
 > *Thread*: The smallest sequence of programmed instructions that can be managed independently by a scheduler.
 
-In Rust, we can use the native `std::thread` interface
+While not as isolated as separate processes, each thread has its own program counter, register set and stack space but share memory space and resources with other threads within the same process.
+Threads can be either handled in userspace by the process spawning them or directly by the OS kernel. Kernel level threads can be independently scheduled by the kernel, allowing for parallel execution when multiple cores are available but they also have higher scheduling and context switching overhead.
+
+In Rust, threads are exposed for use via the native `std::thread` interface. A thread spawned by `std::thread` maps 1:1 onto a kernel level thread scheduled and managed not by Rust but by the OS.
 
 ```rust caption="Concurrent execution with OS threads (From doc.rust-lang.org/book/ch16-01-threads.html)"
 use std::thread;
@@ -228,7 +231,7 @@ This scheduler is responsible for deciding which runnable task should be execute
 
 As you can see, Tokio solves this by having a global queue of tasks (implemented as a FIFO linked list) shared between all threads along with local queues for each thread/worker.
 
-```rust caption="Global 'Injection' queue definition"
+```rust caption="Global 'Injection' queue definition (From tokio/src/runtime/scheduler/inject.rs#L21-L26)"
 /// Growable, MPMC queue used to inject new tasks into the scheduler and as an
 /// overflow queue when the local, fixed-size, array queue overflows.
 pub(crate) struct Inject<T: 'static> {
@@ -239,7 +242,7 @@ pub(crate) struct Inject<T: 'static> {
 
 The local queue is a [ring buffer](https://en.wikipedia.org/wiki/Circular_buffer) which can hold upto 256 tasks at a time. When this local queue overflows, roughly half of the tasks from the local queue are moved to the global queue and held. This serves as spillway to catch overflowing tasks. Any task that wakes up from a thread which is not a worker thread is also placed into the global queue thus acting as a shared entry point too.
 
-```rust caption="Local queue definition"
+```rust caption="Local queue definition (From tokio/src/runtime/scheduler/multi_thread/queue.rs#L28-L57)"
 /// Producer handle. May only be used from a single thread.
 pub(crate) struct Local<T: 'static> {
     inner: Arc<Inner<T>>,
@@ -292,9 +295,26 @@ We've established before that Tokio tasks are lightweight units of work. These t
 
 When a task reaches a state where it cannot make any progress without waiting, it returns `Poll::Pending`. The I/O operation registers interest in the resource, while the task provides a `Waker` that can be used to schedule it again when that resource becomes ready.
 
-A task is a single heap allocation storing a `Header`, `Trailer`, user `Future`, and scheduler pointers. A Waker wraps a raw pointer (`NonNull<Header>`) with a custom `RawWakerVTable` (Tells what operation to perform on the pointer). Calling `.wake()` executes an atomic state transition directly on the task’s `Header` flags. If the transition succeeds and the task is woken, the task memory pointer is re-enqueued into a scheduler queue.
+A `Waker` is essentially a handle to something that knows how to make a suspended task runnable again. Internally, Rust represents this through a `RawWaker` containing a data pointer and a `RawWakerVTable`. The vtable tells the runtime what to do when the waker is cloned, woken, referenced without consuming it, or dropped.
 
-![A task's lifecycle](https://gist.githubusercontent.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/05170090e3e866ba298702ba69ccd02a8bb7a88d/tokio_whole.svg)
+```rust caption="The vtable and raw waker are defined in the standard library. Tokio's custom vtable from tokio/src/runtime/task/waker.rs#L118-L119"
+use std::task::{RawWaker, RawWakerVTable, Waker};
+
+fn wake_task(ptr: *const ()) {
+    // schedule the task
+}
+
+const VTABLE: RawWakerVTable = RawWakerVTable::new(
+    clone,
+    wake_task,
+    wake_by_ref,
+    drop,
+);
+```
+
+Tokio represents a task as a single heap allocation containing the task header, the future, output/state, and scheduler information. A Waker wraps a raw pointer (`NonNull<Header>`) with a custom `RawWakerVTable`. Calling `.wake()` executes an atomic state transition directly on the task’s `Header` flags. If the transition succeeds and the task is woken, the task memory pointer is re-enqueued into a scheduler queue.
+
+![A task's lifecycle](https://gist.githubusercontent.com/Prana-vvb/7a1472b97344d5bbc596021ed9d0c9c0/raw/9793f577c01b2e8e9124e676d98da0cde95bf704/tokio_whole.svg)
 
 The I/O driver waits for events from the OS for the registered resources and wake the tasks when they become available. Tokio does not actually handle each specific I/O driver by itself but instead relies on the [`mio`](https://github.com/tokio-rs/mio) crate to abstract system specific drivers and provide a common API for all of them.
 
