@@ -1,5 +1,5 @@
 ---
-title: "Lost in Tokio" 
+title: "Lost in Tokio"
 date: "2026-08-21"
 tags: [Rust, Tokio, async, concurrency, threads]
 description: "Exploring the architecture of Rust's most popular Async Runtime"
@@ -124,7 +124,7 @@ async fn asynchronous_io() {
 As you can see, the main differences are the `async` keyword in the function definition and the `.await` postfix operator after an async function call.<br/>
 But what exactly are they doing?
 
-**`async`** transforms your function into a [state machine](https://en.wikipedia.org/wiki/Finite-state_machine) that implements the `Future` trait. Each `.await` marks a suspension point and the boundary between different states, allowing the state machine to pause and resume at these points. This state machine also stores context such as local variables, and child Futures that are being awaited.
+`async` transforms your function into a [state machine](https://en.wikipedia.org/wiki/Finite-state_machine) that implements the `Future` trait. Each `.await` marks a suspension point and the boundary between different states, allowing the state machine to pause and resume at these points. This state machine also stores context such as local variables, and child Futures that are being awaited.
 
 When execution reaches an `.await`, the future being awaited is polled. If it is ready, execution continues normally.
 Otherwise, the state machine saves its current state, returns `Poll::Pending` to the caller and yields control so that other work can be done while waiting.
@@ -222,7 +222,7 @@ Generally, this pattern is known as [green threads](https://en.wikipedia.org/wik
 ### The Tokio Scheduler
 <hr/>
 
-This scheduler is responsible for deciding which runnable task should be executed next. In a simple runtime, this could be as easy as maintaining a queue of ready tasks and repeatedly choosing one to poll. In Tokio, which is a multi-threaded runtime, the scheduler has to coordinate M tasks across N threads. Having only a global queue means every worker threads has to contend for access, increasing synchronization overhead.
+This scheduler is responsible for deciding which runnable task should be executed next. In a simple runtime, this could be as easy as maintaining a queue of ready tasks and repeatedly choosing one to poll. In Tokio, which is a multi-threaded runtime, the scheduler has to coordinate M tasks (theoretically unlimited) across N threads (limited amount). Having only a global queue means every worker threads has to contend for access, increasing synchronization overhead.
 
 > [!NOTE]
 > Tokio, by default, is multi-threaded but can be configured to be a single-threaded event loop AKA `current_thread` which can actually be easier to work with in most cases as argued [here](https://emschwartz.me/async-rust-can-be-a-pleasure-to-work-with-without-send-sync-static/)
@@ -293,7 +293,7 @@ Work-stealing involves concurrent, unsynchronized access to head and tail across
 
 We've established before that Tokio tasks are lightweight units of work. These tasks are distributed among workers when they are runnable. But tasks do not remain runnable forever. Tokio is a runtime designed to handle asynchronous I/O bound tasks which spend most of their lifetime waiting for something to happen.
 
-When a task reaches a state where it cannot make any progress without waiting, it returns `Poll::Pending`. The I/O operation registers interest in the resource, while the task provides a `Waker` that can be used to schedule it again when that resource becomes ready.
+When a task reaches a state where it cannot make any progress without waiting, it returns `Poll::Pending`. The I/O operation registers interest in the underlying OS resource, while the task provides a `Waker` that can be used to schedule it again when that resource becomes ready.
 
 A `Waker` is essentially a handle to something that knows how to make a suspended task runnable again. Internally, Rust represents this through a `RawWaker` containing a data pointer and a `RawWakerVTable`. The vtable tells the runtime what to do when the waker is cloned, woken, referenced without consuming it, or dropped.
 
