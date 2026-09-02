@@ -1,7 +1,7 @@
 ---
 title: "Building a simple Load Balancer in Rust" 
 date: "2024-08-10"
-tags: []
+tags: [Rust, load-balancing, networking]
 description: "Blog writeup for the Bal.rs project"
 author_name: Pranav V Bhat
 author_link: "https://github.com/Prana-vvb"
