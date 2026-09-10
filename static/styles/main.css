@@ -579,3 +579,18 @@ pre code {
         text-align: left;
     }
 }
+
+.markdown-body h2 a.heading-anchor,
+.markdown-body h3 a.heading-anchor {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    text-decoration: none;
+    color: var(--color-primary);
+    background-color: transparent;
+    padding: 0;
+}
+
+.markdown-body h2:hover a.heading-anchor,
+.markdown-body h3:hover a.heading-anchor {
+    opacity: 1;
+}

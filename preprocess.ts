@@ -29,9 +29,9 @@ async function build() {
             text = text.replace(regex, (match, lang, caption, code) => {
 
                 const safeCode = code
-                    // 1. Strip only trailing whitespace. (Using .trim() would destroy leading indentation on the first line)
+                    // 1. Strip only trailing whitespace.
                     .replace(/\s+$/, "")
-                    // 2. Escape HTML entities to prevent the DOM from swallowing Rust generics like <T>
+                    // 2. Escape HTML entities to prevent the DOM from swallowing generics like <T>
                     .replace(/&/g, "&amp;")
                     .replace(/</g, "&lt;")
                     .replace(/>/g, "&gt;")
@@ -41,6 +41,31 @@ async function build() {
 
                 // Return the contiguous string without any literal \n characters
                 return `<div class="code-wrapper"><pre><code class="language-${lang}">${safeCode}</code></pre><div class="code-caption">${caption}</div></div>`;
+            });
+
+            // Regex intercepts H2 and H3 markdown headings
+            const headingRegex = /^(#{2,3})\s+(.+?)$/gm;
+
+            text = text.replace(headingRegex, (match, hashes, titleText) => {
+                // Skip if the heading already has an anchor link or explicit {#id} attribute
+                if (titleText.includes('class="heading-anchor"') || titleText.includes('[#')) {
+                    return match;
+                }
+
+                // Strip markdown links, inline code backticks, and formatting prior to slug generation
+                const cleanText = titleText
+                    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Extract text from [text](url)
+                    .replace(/`([^`]+)`/g, '$1')            // Strip code backticks
+                    .replace(/[*_~]/g, '');                 // Strip bold/italics
+
+                // Generate slug matching standard URL rules
+                const slug = cleanText
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric characters with hyphens
+                    .replace(/(^-|-$)/g, '');    // Remove leading and trailing hyphens
+
+                // Attach class="heading-anchor" to isolate styling from content links
+                return `${hashes} ${titleText} <a id="${slug}" href="#${slug}" class="heading-anchor">#</a>`;
             });
 
             await Bun.write(destPath, text);
