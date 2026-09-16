@@ -515,7 +515,9 @@ pre code {
 
     .center-col p,
     article p {
-        text-align: left;
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
         overflow-wrap: break-word;
     }
 
