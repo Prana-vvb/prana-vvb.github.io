@@ -84,7 +84,7 @@ There are 3 key components of our Load Balancer:
 
 We have used Rust's [`tokio`](https://tokio.rs) crate to handle asynchronous processing and the [`hyper`](https://hyper.rs) crate for networking. Tokio's `TcpListener` is used to listen for incoming connections
 
-![Listener code snippet](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/aaad34c5cb5e8a09b7d0f83004e3f40298f368ef/Listener.svg)
+![Listener code snippet](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Listener.svg)
 
 In this code snippet, we create a `TcpListener` instance to listen for incoming traffic and set it to listen on the address of the Load Balancer.  
 If the listener is bound to the Load Balancer successfully, we return the listener object for passing incoming requests to the `handle_request` function or else the error encountered is displayed.<hr/>
@@ -95,7 +95,7 @@ There are 3 functions dealing with client requests.
 
 1. Handling incoming requests: `handle_request` function
 
-   ![Handling an incoming request](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/aaad34c5cb5e8a09b7d0f83004e3f40298f368ef/Handle.svg)
+   ![Handling an incoming request](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Handle.svg)
 
    We lock the `LoadBalancer` instance to access the server list and filter out any dead servers.  
    The function then tries to pass the request to the `get_request` function. If this fails, a message is logged and the loop restarts.
@@ -103,50 +103,50 @@ There are 3 functions dealing with client requests.
    
    This is a dynamic fault tolerence system that reroutes an incoming request to a different server if one server is not available.
 
-   ![Flowchart of the fault tolerence system](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/aaad34c5cb5e8a09b7d0f83004e3f40298f368ef/FaultFlow.svg)
+   ![Flowchart of the fault tolerence system](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/FaultFlow.svg)
 
 2. Forwarding requests to server: `get_request` function
-   ![get_request snippet 1](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/aaad34c5cb5e8a09b7d0f83004e3f40298f368ef/Get1.svg)
+   ![get_request snippet 1](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Get1.svg)
 
    Gets indexes of the servers and selects the server to be used according to the specified algorithm.
 
-   ![get_request snippet 2](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/aaad34c5cb5e8a09b7d0f83004e3f40298f368ef/Get2.svg)
+   ![get_request snippet 2](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Get2.svg)
 
    Here, the server URL is constructed. Requests are then forwarded to the server using the `send_request` function.
    Along with that, a timer is started to measure server response time. The server response is stored in the `data` variable.
 
-   ![get_request snippet 3](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/aaad34c5cb5e8a09b7d0f83004e3f40298f368ef/Get3.svg)
+   ![get_request snippet 3](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Get3.svg)
 
    Here, we handle variants of the server response. If we get a successful response, we return the response data or else mark the corresponding server as dead and return `None`.
 
 3. Retrieve server response: `send_request` function
 
-   ![send_request snippet 1](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/41da9994330f1f96dd34a774291e3cab7af0616a/Send1.svg)
+   ![send_request snippet 1](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Send1.svg)
 
    Parse the URL from the request and extract host and port from it. The port defaults to 80 if not specified.
    Then format the address to a string for a TCP connection.
 
-   ![send_request snippet 2](https://gist.githubusercontent.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/8c6f46419c58e90d5e7d1ef529dffb1290a2dec1/Send2.svg)
+   ![send_request snippet 2](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Send2.svg)
 
    Establish a TCP connection to the formatted address and wrap it in a tokio IO adapter so that it can be used with `hyper`.  
    A `hyper` client is then initialised using a HTTP/1 handshake.
 
-   ![send_request snippet 3](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/83eb442c500db2d84dd55ea8e7dfebf7655d24e6/Send3.svg)
+   ![send_request snippet 3](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Send3.svg)
 
    The HTTP request is prepared with the given URL and `HOST` header and sent using the `hyper` client.
 
-   ![send_request snippet 4](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/b8f7b4fd97ad58e8bcb4492d78537c501417c635/Send4.svg)
+   ![send_request snippet 4](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Send4.svg)
    
    The server response body is then collected in chunks and appended to `full_body`. The complete response is then converted to `Bytes` and returned.<hr/>
 
 ### Fault Tolerence
 This is a slightly large piece of code that ensures smooth functioning of the Load Balancer. So, let's break it down.
 
-   ![Fault tolerence snippet 1](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/b8f7b4fd97ad58e8bcb4492d78537c501417c635/Health1.svg)
+   ![Fault tolerence snippet 1](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Health1.svg)
    
    Here, we create variables to store the required configuration values and clone a `LoadBalancer` instance for further use.
 
-   ![Fault tolerence snippet 2](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/7a6c8a958bf3039f7d5b106a4a195339accea118/Health2.svg)
+   ![Fault tolerence snippet 2](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Health2.svg)
 
    Spawn an asynchronous tokio task for the health checker and create a vector to hold other tokio tasks.  
    Each task corresponds to the health check for each server. This is done to ensure all health checks happen simultaneously.
@@ -154,12 +154,12 @@ This is a slightly large piece of code that ensures smooth functioning of the Lo
 
    Inside the task for each server, we retrieve and update relevant server data.
 
-   ![Fault tolerence snippet 3](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/66cd47cdeebcc88b0f54b6b81ccbc5834a88f4b0/Health3.svg)
+   ![Fault tolerence snippet 3](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Health3.svg)
 
    Using `Instant::now()` and calling `.elapsed()`, we record the server response time. We check if the server is responding by sending a `GET` request to each server with a set timeout and then update the server response time.  
    The subtraction from `lb.servers[index].connections` is done as to not count the connection opened by the health checker.
 
-   ![Fault tolerence snippet 4](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/afb3a0517ad2f3b9278cc3cff7019ce12702e592/Health4.svg)
+   ![Fault tolerence snippet 4](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/Health4.svg)
 
    This `match` block is used to handle the result of the HTTP request sent by the health checker.  
    If the HTTP request is completed sucessfully, we check if the response is an error code(like 404) or if the maximum connections limit is exceeded. This leads to marking of a server as dead and will not be used by the Load Balancer until it is checked again and marked as alive by the health checker.
@@ -167,7 +167,7 @@ This is a slightly large piece of code that ensures smooth functioning of the Lo
    This marks the end of the Health Checker. After this, all the server tasks are awaited on to be periodically executed.  
    Here is a simple flowchart of how the health checking process works:
 
-   ![Health check flow](https://gist.github.com/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/afb3a0517ad2f3b9278cc3cff7019ce12702e592/HealthCheckFlow.svg)
+   ![Health check flow](https://raw.githack.com/gist/Prana-vvb/ff43110750c6fdfc21637e85debbf30a/raw/HealthCheckFlow.svg)
 
    Health checker reports as displayed in the terminal:
 
