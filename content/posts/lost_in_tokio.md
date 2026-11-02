@@ -4,11 +4,10 @@ date: "2026-08-21"
 tags: [Rust, Tokio, async, concurrency, threads]
 description: "Exploring the architecture of Rust's most popular Async Runtime"
 author_name: Pranav V Bhat
-author_link: "https://github.com/Prana-vvb"
 collections: ["blog"]
 ---
 
-Here, I try to get an abstracted overview of Tokio's architecture to build the foundation needed to understand its internals in depth later. To understand Tokio and why it exists, we must first look at the problems it was built to solve. We'll start with the simplest model of execution and gradually introduce the abstractions that lead us to an async runtime.
+In this post, I try to get an abstracted overview of Tokio's architecture to build the foundation needed to understand its internals in depth later. To understand Tokio and why it exists, we must first look at the problems it was built to solve. We'll start with the simplest model of execution and gradually introduce the abstractions that lead us to an async runtime.
 
 ## Level 0: Synchronous programming
 <hr/>

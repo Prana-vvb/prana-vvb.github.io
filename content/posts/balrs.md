@@ -4,9 +4,13 @@ date: "2024-08-10"
 tags: [Rust, load-balancing, networking]
 description: "Blog writeup for the Bal.rs project"
 author_name: Pranav V Bhat
-author_link: "https://github.com/Prana-vvb"
 collections: ["blog"]
 ---
+
+> [!NOTE]
+> Based on the version at [homebrew-ec-foss/bal.rs](https://github.com/homebrew-ec-foss/bal.rs) done in 2024
+>
+> Updated load balancer at [Prana-vvb/ballrs](https://github.com/Prana-vvb/ballrs)
 
 ## Why do I need a Load Balancer?
 
