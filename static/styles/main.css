@@ -211,20 +211,20 @@ video {
     hyphens: auto;
 }
 
-.markdown-body ul,
-.markdown-body ol {
-    margin: 1.5rem 0;
-    padding-left: 1.5rem;
-}
-
-.markdown-body li {
-    margin-bottom: 1.25rem;
-    line-height: 1.6;
-}
-
-.markdown-body li:last-child {
-    margin-bottom: 0;
-}
+/* .markdown-body ul, */
+/* .markdown-body ol { */
+/*     margin: 1.5rem 0; */
+/*     padding-left: 1.5rem; */
+/* } */
+/**/
+/* .markdown-body li { */
+/*     margin-bottom: 1.25rem; */
+/*     line-height: 1.6; */
+/* } */
+/**/
+/* .markdown-body li:last-child { */
+/*     margin-bottom: 0; */
+/* } */
 
 .markdown-body img {
     max-width: 100%;
