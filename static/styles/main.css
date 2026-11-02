@@ -7,7 +7,15 @@
     --color-text-dim: #8b949e;
     --color-primary: #1aff7e;
     --color-accent-bg: rgba(26, 255, 126, 0.12);
-    --font-main: '3270 Nerd Font', 'IBM 3270', '3270', monospace;
+    --font-main: 'CaskaydiaCove', monospace;
+}
+
+@font-face {
+    font-family: 'CaskaydiaCove';
+    src: url('../fonts/CaskaydiaCoveNerdFont-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }
 
 /* Base Reset & Globals */
@@ -201,6 +209,21 @@ video {
     text-align: justify;
     text-justify: inter-word;
     hyphens: auto;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.markdown-body li {
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+}
+
+.markdown-body li:last-child {
+    margin-bottom: 0;
 }
 
 .markdown-body img {
